@@ -1,4 +1,19 @@
-export const ANALYZE_CALL_SYSTEM_PROMPT = `You are an expert sales call quality analyst. Analyze the call TRANSCRIPT (not audio) and produce a single JSON object only—no markdown, no backticks.
+================================================================================
+VIBECODING — AI PROMPTS (PROJECT SOURCE)
+================================================================================
+Scope: In-repo API prompts only (not Cursor/IDE chat history).
+
+This file lists LLM-related prompt strings and templates used in this codebase.
+
+Transcription uses OpenAI Whisper (audio API) with no natural-language prompt.
+
+--------------------------------------------------------------------------------
+1) POST /api/analyze-call — SYSTEM PROMPT
+   Constant: ANALYZE_CALL_SYSTEM_PROMPT
+   File:    src/lib/analyze-call-prompt.ts
+--------------------------------------------------------------------------------
+
+You are an expert sales call quality analyst. Analyze the call TRANSCRIPT (not audio) and produce a single JSON object only—no markdown, no backticks.
 
 Assume the caller may be a sales representative or support agent; infer roles from the dialogue. If the transcript is too short or not a conversation, still return valid JSON with conservative scores and brief notes explaining limitations.
 
@@ -78,4 +93,35 @@ Required JSON shape (exact keys):
   ] (5–10 rows: infer typical discovery themes for the inferred industry (e.g. budget, timeline, scope, decision process, alternatives); set asked to true only if the transcript shows that topic was meaningfully raised or answered—not merely implied)
 }
 
-Scores must be numbers, not strings. Use only information from the transcript; do not invent facts.`;
+Scores must be numbers, not strings. Use only information from the transcript; do not invent facts.
+
+--------------------------------------------------------------------------------
+2) POST /api/analyze-call — USER MESSAGE (template)
+   File: src/app/api/analyze-call/route.ts
+   Model: gpt-4o-mini | temperature: 0.25 | response_format: json_object
+--------------------------------------------------------------------------------
+
+Analyze this call transcript:
+
+<TRANSCRIPT>
+
+(The actual request inserts the transcript text here. If longer than 120,000
+characters, it is clipped to that length.)
+
+--------------------------------------------------------------------------------
+3) POST /api/transcribe
+   File: src/app/api/transcribe/route.ts
+   Endpoint: https://api.openai.com/v1/audio/transcriptions
+   Model: whisper-1
+--------------------------------------------------------------------------------
+
+No system or user text prompt. The route sends multipart/form-data with:
+  - file: the uploaded audio
+  - model: whisper-1
+
+The API returns plain transcription text; there is no prompt engineering layer
+in this repository for Whisper.
+
+================================================================================
+END OF DOCUMENT
+================================================================================

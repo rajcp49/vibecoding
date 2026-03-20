@@ -100,11 +100,11 @@ function SectionLabel({
 }) {
   return (
     <div className={`mb-6 ${className}`}>
-      <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-400/90">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
         {kicker}
       </p>
-      <h2 className="mt-1 text-xl font-semibold text-stone-100">{title}</h2>
-      <p className="mt-1 max-w-2xl text-sm text-stone-500">{subtitle}</p>
+      <h2 className="mt-1 text-xl font-semibold text-ink">{title}</h2>
+      <p className="mt-1 max-w-2xl text-sm text-ink/65">{subtitle}</p>
     </div>
   );
 }
@@ -119,43 +119,43 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         {data.topKeywords.slice(0, 8).map((k) => (
           <li
             key={k.term}
-            className="flex justify-between gap-2 rounded-lg border border-sky-500/15 bg-sky-500/5 px-2.5 py-1.5"
+            className="flex justify-between gap-2 rounded-lg border border-brand/20 bg-brand/5 px-2.5 py-1.5"
           >
-            <span className="truncate font-medium text-sky-200">{k.term}</span>
-            <span className="shrink-0 tabular-nums font-semibold text-sky-400/90">
+            <span className="truncate font-medium text-ink">{k.term}</span>
+            <span className="shrink-0 tabular-nums font-semibold text-brand">
               {k.mentions}
             </span>
           </li>
         ))}
       </ul>
     ) : (
-      <span className="text-stone-600">—</span>
+      <span className="text-ink/50">—</span>
     );
 
   const sentimentValue =
     sentimentTotal > 0 ? (
       <div className="space-y-2 text-sm font-medium">
-        <div className="flex items-center justify-between gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-2">
-          <span className="text-emerald-200/90">Positive</span>
-          <span className="tabular-nums text-lg font-bold text-emerald-300">
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-brand/25 bg-brand/10 px-3 py-2">
+          <span className="font-medium text-ink">Positive</span>
+          <span className="tabular-nums text-lg font-bold text-brand">
             {s.positive}
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2">
-          <span className="text-amber-200/90">Neutral</span>
-          <span className="tabular-nums text-lg font-bold text-amber-300">
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-brand/15 bg-paper px-3 py-2">
+          <span className="font-medium text-ink/80">Neutral</span>
+          <span className="tabular-nums text-lg font-bold text-ink/90">
             {s.neutral}
           </span>
         </div>
-        <div className="flex items-center justify-between gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-2">
-          <span className="text-rose-200/90">Negative</span>
-          <span className="tabular-nums text-lg font-bold text-rose-300">
+        <div className="flex items-center justify-between gap-2 rounded-lg border border-ink/15 bg-ink/5 px-3 py-2">
+          <span className="font-medium text-ink">Negative</span>
+          <span className="tabular-nums text-lg font-bold text-ink">
             {s.negative}
           </span>
         </div>
       </div>
     ) : (
-      <span className="text-stone-600">—</span>
+      <span className="text-ink/50">—</span>
     );
 
   const actionTotal = data.totalActionItems + data.totalFollowUps;
@@ -163,13 +163,13 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
   return (
     <div className="mx-auto max-w-6xl px-4 pb-16 pt-8 sm:px-6">
       <header className="mb-8">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200/90">
+        <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
           Overview
         </div>
-        <h1 className="mt-4 bg-gradient-to-r from-amber-100 via-yellow-200 to-orange-200 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
+        <h1 className="mt-4 bg-gradient-to-r from-brand via-brand/90 to-brand/75 bg-clip-text text-3xl font-semibold tracking-tight text-transparent sm:text-4xl">
           Main Dashboard
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-400">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink/65">
           Color-coded numbers and quick summaries—see library health, tone, and
           workload at a glance.
         </p>
@@ -186,17 +186,16 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <DashboardMetricCard
-          accent="amber"
           icon={<IconPhone />}
           title="Total Calls Processed"
           description="Running count of all recordings analyzed by the system."
           value={data.totalCallsProcessed.toLocaleString()}
         >
-          <p className="text-xs leading-relaxed text-stone-500">
+          <p className="text-xs leading-relaxed text-ink/65">
             Saved files live in{" "}
             <a
               href="#your-calls"
-              className="font-semibold text-cyan-400/90 underline underline-offset-2 hover:text-cyan-300"
+              className="font-semibold text-brand underline underline-offset-2 hover:text-brand/80"
             >
               Your calls
             </a>{" "}
@@ -205,7 +204,6 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         </DashboardMetricCard>
 
         <DashboardMetricCard
-          accent="rose"
           icon={<IconSmile />}
           title="Sentiment Split"
           description="Breakdown of positive vs. negative vs. neutral calls across all recordings."
@@ -214,7 +212,6 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         />
 
         <DashboardMetricCard
-          accent="violet"
           icon={<IconStar />}
           title="Average Call Score"
           description="Mean quality score across all processed calls, scored 0–10."
@@ -224,7 +221,6 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         />
 
         <DashboardMetricCard
-          accent="cyan"
           icon={<IconTimer />}
           title="Avg. Call Duration"
           description="Average length of calls to benchmark engagement time."
@@ -236,7 +232,6 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         />
 
         <DashboardMetricCard
-          accent="sky"
           icon={<IconKey />}
           title="Top Keywords"
           description="Most frequently discussed topics across the entire call library."
@@ -245,7 +240,6 @@ function CallAnalyticsDashboardView({ data }: { data: CallAnalyticsOverview }) {
         />
 
         <DashboardMetricCard
-          accent="emerald"
           icon={<IconCheck />}
           title="Action Items Total"
           description="Aggregate count of follow-up tasks and commitments identified across all calls."

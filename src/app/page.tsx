@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/AppShell";
+import { CallAnalyticsDashboard } from "@/components/dashboard/CallAnalyticsDashboard";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <AppShell />
+      <AppShell>
+        <CallAnalyticsDashboard />
+      </AppShell>
     </div>
   );
 }

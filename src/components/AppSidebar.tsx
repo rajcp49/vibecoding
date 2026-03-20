@@ -7,7 +7,7 @@ import { useAudioCapture } from "@/contexts/audio-capture-context";
 export function AppSidebar() {
   const pathname = usePathname();
   const {
-    triggerUpload,
+    openUploadModal,
     resetRecording,
     isBusy,
     recordedBlob,
@@ -16,22 +16,22 @@ export function AppSidebar() {
   const homeActive = pathname === "/";
 
   return (
-    <aside className="flex w-full shrink-0 flex-col border-b border-amber-500/15 bg-black/80 backdrop-blur-md md:w-72 md:border-b-0 md:border-r">
-      <div className="border-b border-amber-500/10 px-5 py-6">
+    <aside className="flex w-full shrink-0 flex-col border-b border-brand/15 bg-white/95 shadow-[4px_0_40px_-20px_rgba(42,36,32,0.08)] backdrop-blur-md md:w-72 md:border-b-0 md:border-r md:border-brand/15">
+      <div className="border-b border-brand/10 px-5 py-6">
         <Link
           href="/"
-          className="bg-gradient-to-r from-amber-200 via-yellow-300 to-amber-400 bg-clip-text text-lg font-semibold tracking-tight text-transparent"
+          className="bg-gradient-to-r from-brand via-brand/90 to-brand/75 bg-clip-text text-lg font-semibold tracking-tight text-transparent"
         >
           Vibecoding
         </Link>
-        <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.25em] text-amber-600/80">
+        <p className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.25em] text-brand/90">
           Call intelligence
         </p>
         <button
           type="button"
-          onClick={triggerUpload}
+          onClick={openUploadModal}
           disabled={isBusy}
-          className="mt-5 w-full rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black shadow-lg shadow-amber-500/20 transition hover:from-amber-400 hover:to-yellow-500 hover:shadow-amber-400/25 disabled:opacity-40"
+          className="mt-5 w-full rounded-xl bg-gradient-to-r from-brand via-brand/95 to-brand/85 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-paper shadow-[0_6px_28px_-6px_rgba(184,134,11,0.45)] transition hover:brightness-105 disabled:opacity-40"
         >
           Upload
         </button>
@@ -42,37 +42,37 @@ export function AppSidebar() {
           href="/"
           className={`rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
             homeActive
-              ? "border border-amber-500/30 bg-gradient-to-r from-amber-500/15 to-yellow-600/10 text-amber-100 shadow-inner shadow-amber-900/20"
-              : "text-stone-400 hover:bg-amber-500/5 hover:text-amber-200/90"
+              ? "border border-brand/25 bg-gradient-to-r from-brand/10 to-brand/5 text-ink shadow-sm ring-1 ring-brand/15"
+              : "text-ink/70 hover:bg-brand/5 hover:text-ink"
           }`}
         >
           Dashboard
         </Link>
       </nav>
 
-      <div className="border-t border-amber-500/10 p-4">
-        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-600">
+      <div className="border-t border-brand/10 p-4">
+        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/45">
           Tips
         </p>
-        <ul className="space-y-2 text-xs leading-relaxed text-stone-500">
+        <ul className="space-y-2 text-xs leading-relaxed text-ink/65">
           <li className="flex gap-2">
-            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-brand shadow-[0_0_10px_rgba(184,134,11,0.5)]" />
             <span>
-              <span className="font-medium text-amber-200/90">Gold</span> stats
+              <span className="font-medium text-brand">Bold gold</span> stats
               come from analyzed calls.
             </span>
           </li>
           <li className="flex gap-2">
-            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-brand/50" />
             <span>
-              <span className="font-medium text-emerald-300/90">Green</span>{" "}
-              badges mean insights are ready.
+              <span className="font-medium text-ink/80">Soft gold</span> badges
+              mean insights are ready.
             </span>
           </li>
           <li className="flex gap-2">
-            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.5)]" />
+            <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-ink/25" />
             <span>
-              <span className="font-medium text-sky-300/90">Blue</span> means
+              <span className="font-medium text-ink/70">Muted</span> means
               still needs transcribe + analyze.
             </span>
           </li>
@@ -80,12 +80,12 @@ export function AppSidebar() {
       </div>
 
       {recordedBlob ? (
-        <div className="border-t border-amber-500/10 p-4">
+        <div className="border-t border-brand/10 p-4">
           <button
             type="button"
             onClick={resetRecording}
             disabled={isBusy}
-            className="w-full rounded-xl border border-stone-700 bg-stone-950/80 px-4 py-2.5 text-sm font-medium text-stone-400 transition hover:border-amber-500/30 hover:text-amber-200/80 disabled:opacity-40"
+            className="w-full rounded-xl border border-ink/15 bg-paper px-4 py-2.5 text-sm font-medium text-ink/70 transition hover:border-brand/30 hover:bg-brand/5 hover:text-ink disabled:opacity-40"
           >
             Clear clip
           </button>

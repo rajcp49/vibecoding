@@ -3,6 +3,7 @@ import type {
   ActionItemType,
   ConversationAnalysis,
   ExtractedKeyword,
+  QuestionnaireItem,
   TalkTimeAnalysis,
 } from "@/types/conversation-analysis";
 
@@ -17,6 +18,28 @@ function clampScore(n: number, min = 1, max = 10): number {
 function clampPercent(n: number): number {
   if (!Number.isFinite(n)) return 0;
   return Math.min(100, Math.max(0, Math.round(n)));
+}
+
+function parseStringList(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  return (raw as unknown[])
+    .filter((x): x is string => typeof x === "string")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
+function parseQuestionnaireItems(raw: unknown): QuestionnaireItem[] {
+  if (!Array.isArray(raw)) return [];
+  return (raw as unknown[])
+    .map((row) => {
+      if (!row || typeof row !== "object") return null;
+      const o = row as Record<string, unknown>;
+      const topic = typeof o.topic === "string" ? o.topic.trim() : "";
+      if (!topic) return null;
+      const asked = o.asked === true;
+      return { topic, asked };
+    })
+    .filter((x): x is QuestionnaireItem => x !== null);
 }
 
 function parseTalkTime(raw: unknown): TalkTimeAnalysis {
@@ -128,5 +151,8 @@ export function parseConversationAnalysis(raw: unknown): ConversationAnalysis {
         : [],
     },
     actionItems: items.filter((i) => i.text.length > 0),
+    positiveObservations: parseStringList(o.positiveObservations),
+    negativeObservations: parseStringList(o.negativeObservations),
+    questionnaireItems: parseQuestionnaireItems(o.questionnaireItems),
   };
 }

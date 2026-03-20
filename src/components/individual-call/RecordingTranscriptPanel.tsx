@@ -28,7 +28,7 @@ export function RecordingTranscriptPanel({ audioUrl, turns }: Props) {
       {audioUrl ? (
         <audio
           ref={audioRef}
-          className="w-full"
+          className="w-full rounded-lg border border-brand/15 bg-paper"
           src={audioUrl}
           controls
           preload="metadata"
@@ -45,19 +45,19 @@ export function RecordingTranscriptPanel({ audioUrl, turns }: Props) {
           }}
         />
       ) : (
-        <p className="rounded-lg border border-dashed border-amber-500/25 bg-black/30 px-3 py-4 text-sm text-stone-500">
+        <p className="rounded-lg border border-dashed border-brand/25 bg-brand/5 px-3 py-4 text-sm text-ink/70">
           No audio available for this clip.
         </p>
       )}
 
       {progressLabel ? (
-        <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
+        <p className="text-xs font-medium uppercase tracking-wide text-ink/55">
           Transcript segments · {progressLabel}
         </p>
       ) : null}
 
       <div
-        className="max-h-[min(24rem,50vh)] space-y-3 overflow-y-auto rounded-lg border border-amber-500/15 bg-black/40 p-3 ring-1 ring-amber-500/10"
+        className="max-h-[min(24rem,50vh)] space-y-3 overflow-y-auto rounded-lg border border-brand/12 bg-paper p-3"
         role="region"
         aria-label="Call transcript"
       >
@@ -68,14 +68,14 @@ export function RecordingTranscriptPanel({ audioUrl, turns }: Props) {
               key={`${turn.speaker}-${i}-${turn.text.slice(0, 24)}`}
               className={`rounded-md px-3 py-2 text-sm leading-relaxed transition-colors ${
                 isActive
-                  ? "bg-amber-500/15 text-stone-100 ring-1 ring-amber-400/30"
-                  : "text-stone-300"
+                  ? "bg-brand/12 text-ink ring-1 ring-brand/35"
+                  : "text-ink/90"
               }`}
             >
-              <span className="font-semibold text-amber-300/90">
+              <span className="font-semibold text-brand">
                 {turn.speaker}
               </span>
-              <span className="text-stone-600"> · </span>
+              <span className="text-ink/45"> · </span>
               {turn.text}
             </div>
           );

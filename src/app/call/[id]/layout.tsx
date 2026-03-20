@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CallDetailProviders } from "@/components/call/CallDetailProviders";
 
 export default function CallDetailLayout({
   children,
@@ -6,6 +7,8 @@ export default function CallDetailLayout({
   children: ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-[#050505]">{children}</div>
+    <div className="min-h-screen bg-paper">
+      <CallDetailProviders>{children}</CallDetailProviders>
+    </div>
   );
 }

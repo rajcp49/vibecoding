@@ -23,19 +23,19 @@ export default async function IndividualCallPage({
 
   return (
     <>
-      <header className="border-b border-amber-500/15 bg-black/40 backdrop-blur-sm">
+      <header className="border-b border-brand/15 bg-paper/95 shadow-sm backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
           <Link
-            href="/?tab=recordings"
-            className="text-sm font-semibold text-amber-300/90 transition hover:text-amber-200"
+            href="/"
+            className="text-sm font-semibold text-brand transition hover:text-brand/85"
           >
-            ← Recorded audio
+            ← Dashboard
           </Link>
           <Link
-            href={`/?tab=dashboard&recordingId=${encodeURIComponent(id)}`}
-            className="text-sm font-medium text-stone-400 underline-offset-2 transition hover:text-amber-200/80 hover:underline"
+            href="/"
+            className="text-sm font-medium text-ink/60 underline-offset-2 transition hover:text-brand hover:underline"
           >
-            Open in Transcribe
+            Home
           </Link>
         </div>
       </header>

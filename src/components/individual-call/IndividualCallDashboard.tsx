@@ -1,7 +1,14 @@
 import { FeatureCard } from "@/components/individual-call/FeatureCard";
+import { IndividualCallFollowUpSection } from "@/components/individual-call/IndividualCallFollowUpSection";
+import { IndividualCallQuestionnaireKeywords } from "@/components/individual-call/IndividualCallQuestionnaireKeywords";
 import { MetricsCard } from "@/components/individual-call/MetricsCard";
 import { RecordingTranscriptPanel } from "@/components/individual-call/RecordingTranscriptPanel";
 import type { TranscriptTurn } from "@/lib/parse-transcript-turns";
+import type {
+  ActionItemExtracted,
+  ExtractedKeyword,
+  QuestionnaireItem,
+} from "@/types/conversation-analysis";
 
 export type IndividualCallModel = {
   title: string;
@@ -16,6 +23,11 @@ export type IndividualCallModel = {
   /** Null when this clip has not been analyzed yet. */
   overallScore: number | null;
   hasAnalysis: boolean;
+  actionItems: ActionItemExtracted[];
+  positiveObservations: string[];
+  negativeObservations: string[];
+  questionnaireItems: QuestionnaireItem[];
+  topKeywords: ExtractedKeyword[];
 };
 
 const ICON_DOC = (
@@ -64,22 +76,35 @@ type Props = {
 export function IndividualCallDashboard({ model }: Props) {
   const summaryDesc = model.summary.trim()
     ? model.summary.trim()
-    : "AI-generated summary covering the purpose, main topics, and outcome of the call. Run Analyze insights on the Transcribe tab to generate one for this recording.";
+    : "AI-generated summary covering the purpose, main topics, and outcome of the call. Run Analyze insights above to generate one for this recording.";
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
       <header className="mb-10 max-w-3xl">
-        <h1 className="bg-gradient-to-r from-amber-100 via-yellow-200 to-amber-300 bg-clip-text text-3xl font-bold tracking-tight text-transparent">
+        <h1 className="bg-gradient-to-r from-brand via-brand/90 to-ink bg-clip-text text-3xl font-bold tracking-tight text-transparent">
           Individual Call Dashboard
         </h1>
-        <p className="mt-3 text-base leading-relaxed text-stone-400">
+        <p className="mt-3 text-base leading-relaxed text-ink/65">
           Each call receives its own dedicated analysis page with granular detail
           to help teams understand exactly what happened during the conversation.
         </p>
-        <p className="mt-2 text-sm font-medium text-amber-200/90">
+        <p className="mt-2 text-sm font-medium text-brand">
           {model.title}
         </p>
       </header>
+
+      <IndividualCallFollowUpSection
+        hasAnalysis={model.hasAnalysis}
+        actionItems={model.actionItems}
+        positiveObservations={model.positiveObservations}
+        negativeObservations={model.negativeObservations}
+      />
+
+      <IndividualCallQuestionnaireKeywords
+        hasAnalysis={model.hasAnalysis}
+        questionnaireItems={model.questionnaireItems}
+        topKeywords={model.topKeywords}
+      />
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
         <div className="flex flex-col gap-4">
@@ -93,19 +118,19 @@ export function IndividualCallDashboard({ model }: Props) {
             description={`Classified as ${model.sentimentLabel} based on tone and language analysis in the transcript.`}
             icon={ICON_SMILE}
           />
-          <div className="rounded-xl border border-amber-500/15 bg-gradient-to-b from-neutral-900/80 to-black/50 p-4 shadow-lg ring-1 ring-amber-500/10">
+          <div className="surface-rich rounded-xl border border-brand/12 p-4">
             <div className="flex gap-4">
               <div
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-300/90"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-brand/12 text-brand"
                 aria-hidden
               >
                 {ICON_PLAY}
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="font-semibold text-stone-100">
+                <h3 className="font-semibold text-ink">
                   Recording Player
                 </h3>
-                <p className="mt-1 text-sm leading-relaxed text-stone-400">
+                <p className="mt-1 text-sm leading-relaxed text-ink/65">
                   Play original audio alongside the transcript. Segment highlight
                   tracks playback progress when the transcript is split into
                   multiple parts.

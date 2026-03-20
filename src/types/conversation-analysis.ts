@@ -54,6 +54,12 @@ export type ExtractedKeyword = {
   term: string;
 };
 
+/** Discovery / business questions coverage (individual call dashboard). */
+export type QuestionnaireItem = {
+  topic: string;
+  asked: boolean;
+};
+
 /** Estimated from transcript turn balance (percentages sum to ~100). */
 export type TalkTimeAnalysis = {
   agentTalkPercent: number;
@@ -71,4 +77,19 @@ export type ConversationAnalysis = {
   agentPerformance: AgentPerformance;
   sentimentAndPatterns: SentimentAndPatterns;
   actionItems: ActionItemExtracted[];
+  /**
+   * Qualitative strengths observed in the call (for individual call dashboard).
+   * Present on new analyses; older saved rows may omit.
+   */
+  positiveObservations?: string[];
+  /**
+   * Areas for improvement or risks (for individual call dashboard).
+   * Present on new analyses; older saved rows may omit.
+   */
+  negativeObservations?: string[];
+  /**
+   * Which discovery / business question areas were addressed in the call.
+   * Present on new analyses; older saved rows may omit.
+   */
+  questionnaireItems?: QuestionnaireItem[];
 };

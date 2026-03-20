@@ -27,6 +27,11 @@ type Phase = "idle" | "transcribing";
 const FILE_ACCEPT =
   "audio/*,.webm,.mp3,.wav,.m4a,.mp4,.mpeg,.mpga,.ogg";
 
+export type UploadPipelineResult = {
+  ok: boolean;
+  recordingId: string | null;
+};
+
 type AudioCaptureContextValue = {
   phase: Phase;
   recordedBlob: Blob | null;
@@ -43,12 +48,14 @@ type AudioCaptureContextValue = {
   isAnalyzing: boolean;
   isBusy: boolean;
   currentRecordingId: string | null;
-  uploadInputRef: React.RefObject<HTMLInputElement | null>;
+  isUploadModalOpen: boolean;
+  openUploadModal: () => void;
+  closeUploadModal: () => void;
+  /** Save → transcribe → analyze; returns whether analysis completed and recording id. */
+  queueUploadPipeline: (file: File) => Promise<UploadPipelineResult>;
   resetRecording: () => void;
-  triggerUpload: () => void;
-  onFileInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  transcribe: () => Promise<void>;
-  runAnalysis: () => Promise<void>;
+  transcribe: (blobOverride?: Blob) => Promise<string | null>;
+  runAnalysis: (transcriptOverride?: string | null) => Promise<boolean>;
   loadRecordingById: (id: string) => Promise<void>;
 };
 
@@ -76,8 +83,8 @@ export function AudioCaptureProvider({
   const [currentRecordingId, setCurrentRecordingId] = useState<string | null>(
     null,
   );
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
-  const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const currentRecordingIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -185,40 +192,22 @@ export function AudioCaptureProvider({
     clearTranscribeSessionCache();
   }, []);
 
-  const onFileInputChange = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const f = e.target.files?.[0];
-      e.target.value = "";
-      setError(null);
-      setTranscript("");
-      setAnalysis(null);
-      setAnalysisError(null);
-      if (!f) return;
-      setRecordedBlob(f);
-      setRecordMime(f.type || "audio/webm");
-      setFileLabel(f.name);
-      setSaveTitle(f.name.replace(/\.[^.]+$/, "") || "");
-      await persistNewBlob(f, f.type || "audio/webm", f.name);
-    },
-    [persistNewBlob],
-  );
-
-  const triggerUpload = useCallback(() => {
-    uploadInputRef.current?.click();
-  }, []);
-
-  const transcribe = useCallback(async () => {
-    if (!recordedBlob || recordedBlob.size === 0) {
+  const transcribe = useCallback(async (blobOverride?: Blob): Promise<string | null> => {
+    const blob = blobOverride ?? recordedBlob;
+    if (!blob || blob.size === 0) {
       setError("Add an audio file first.");
-      return;
+      return null;
     }
     setPhase("transcribing");
     setError(null);
     try {
-      const ext = extensionForMime(recordMime);
-      const name = fileLabel ?? `recording.${ext}`;
+      const ext = extensionForMime(blob instanceof File ? blob.type || recordMime : recordMime);
+      const name =
+        blob instanceof File
+          ? blob.name
+          : fileLabel ?? `recording.${ext}`;
       const fd = new FormData();
-      fd.append("file", recordedBlob, name);
+      fd.append("file", blob, name);
 
       const res = await fetch("/api/transcribe", {
         method: "POST",
@@ -228,7 +217,7 @@ export function AudioCaptureProvider({
       if (!res.ok) {
         setError(data.error ?? `Request failed (${res.status})`);
         setPhase("idle");
-        return;
+        return null;
       }
       const next = data.text?.trim() ?? "";
       setTranscript(next);
@@ -238,55 +227,104 @@ export function AudioCaptureProvider({
       if (rid) {
         await updateRecording(rid, { transcript: next });
       }
+      return next;
     } catch (e) {
       setError(e instanceof Error ? e.message : "Network error");
+      return null;
     } finally {
       setPhase("idle");
     }
   }, [recordedBlob, recordMime, fileLabel, currentRecordingId]);
 
-  const runAnalysis = useCallback(async () => {
-    const t = transcript.trim();
-    if (!t) {
-      setAnalysisError("Transcribe the call first.");
-      return;
-    }
-    setIsAnalyzing(true);
-    setAnalysisError(null);
-    try {
-      const res = await fetch("/api/analyze-call", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ transcript: t }),
-      });
-      const data = (await res.json()) as {
-        analysis?: ConversationAnalysis;
-        error?: string;
-      };
-      if (!res.ok) {
-        setAnalysis(null);
-        setAnalysisError(data.error ?? `Analysis failed (${res.status})`);
-        return;
+  const runAnalysis = useCallback(
+    async (transcriptOverride?: string | null): Promise<boolean> => {
+      const t = (transcriptOverride ?? transcript).trim();
+      if (!t) {
+        setAnalysisError("Transcribe the call first.");
+        return false;
       }
-      if (data.analysis) {
-        setAnalysis(data.analysis);
-        const rid = currentRecordingIdRef.current ?? currentRecordingId;
-        if (rid) {
-          await updateRecording(rid, {
-            analysis: data.analysis,
-            analyzedAt: Date.now(),
-          });
+      setIsAnalyzing(true);
+      setAnalysisError(null);
+      try {
+        const res = await fetch("/api/analyze-call", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript: t }),
+        });
+        const data = (await res.json()) as {
+          analysis?: ConversationAnalysis;
+          error?: string;
+        };
+        if (!res.ok) {
+          setAnalysis(null);
+          setAnalysisError(data.error ?? `Analysis failed (${res.status})`);
+          return false;
         }
-      } else {
+        if (data.analysis) {
+          setAnalysis(data.analysis);
+          const rid = currentRecordingIdRef.current ?? currentRecordingId;
+          if (rid) {
+            await updateRecording(rid, {
+              analysis: data.analysis,
+              analyzedAt: Date.now(),
+            });
+          }
+          return true;
+        }
         setAnalysisError("No analysis returned.");
+        return false;
+      } catch (e) {
+        setAnalysis(null);
+        setAnalysisError(e instanceof Error ? e.message : "Network error");
+        return false;
+      } finally {
+        setIsAnalyzing(false);
       }
-    } catch (e) {
+    },
+    [transcript, currentRecordingId],
+  );
+
+  const queueUploadPipeline = useCallback(
+    async (file: File): Promise<UploadPipelineResult> => {
+      setError(null);
+      setTranscript("");
       setAnalysis(null);
-      setAnalysisError(e instanceof Error ? e.message : "Network error");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  }, [transcript, currentRecordingId]);
+      setAnalysisError(null);
+      setRecordedBlob(file);
+      setRecordMime(file.type || "audio/webm");
+      setFileLabel(file.name);
+      setSaveTitle(file.name.replace(/\.[^.]+$/, "") || "");
+      try {
+        await persistNewBlob(file, file.type || "audio/webm", file.name);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not save recording.");
+        return { ok: false, recordingId: null };
+      }
+      const text = await transcribe(file);
+      if (text == null || text.trim() === "") {
+        return {
+          ok: false,
+          recordingId: currentRecordingIdRef.current,
+        };
+      }
+      const analysisOk = await runAnalysis(text);
+      return {
+        ok: analysisOk,
+        recordingId: currentRecordingIdRef.current,
+      };
+    },
+    [persistNewBlob, transcribe, runAnalysis],
+  );
+
+  const openUploadModal = useCallback(() => {
+    setError(null);
+    setAnalysisError(null);
+    setIsUploadModalOpen(true);
+  }, []);
+
+  const closeUploadModal = useCallback(() => {
+    setIsUploadModalOpen(false);
+  }, []);
 
   const isBusy = phase === "transcribing" || isAnalyzing;
 
@@ -306,10 +344,11 @@ export function AudioCaptureProvider({
     isAnalyzing,
     isBusy,
     currentRecordingId,
-    uploadInputRef,
+    isUploadModalOpen,
+    openUploadModal,
+    closeUploadModal,
+    queueUploadPipeline,
     resetRecording,
-    triggerUpload,
-    onFileInputChange,
     transcribe,
     runAnalysis,
     loadRecordingById,
@@ -317,16 +356,6 @@ export function AudioCaptureProvider({
 
   return (
     <AudioCaptureContext.Provider value={value}>
-      <input
-        ref={uploadInputRef}
-        type="file"
-        className="sr-only"
-        accept={FILE_ACCEPT}
-        aria-hidden
-        tabIndex={-1}
-        disabled={isBusy}
-        onChange={onFileInputChange}
-      />
       {children}
     </AudioCaptureContext.Provider>
   );
@@ -339,3 +368,5 @@ export function useAudioCapture() {
   }
   return ctx;
 }
+
+export { FILE_ACCEPT };

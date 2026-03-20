@@ -15,26 +15,26 @@ export function MetricsCard({
   scoreMax = 10,
 }: Props) {
   return (
-    <div className="rounded-xl border border-amber-500/20 bg-gradient-to-b from-neutral-950 to-black p-6 text-stone-100 shadow-xl shadow-black/40 ring-1 ring-amber-500/10">
+    <div className="surface-rich rounded-xl border border-brand/12 p-6 text-ink shadow-[0_12px_40px_-20px_rgba(42,36,32,0.12)]">
       <section>
-        <h3 className="text-lg font-semibold text-amber-100/95">Talk Time Analysis</h3>
-        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+        <h3 className="text-lg font-semibold text-ink">Talk Time Analysis</h3>
+        <p className="mt-1 text-sm leading-relaxed text-ink/65">
           Estimated speaking distribution between agent and customer from the
           transcript (who contributed more words / turns).
         </p>
         {hasAnalysis ? (
-          <div className="mt-4 overflow-hidden rounded-lg border border-amber-500/20 bg-black/30">
+          <div className="mt-4 overflow-hidden rounded-lg border border-brand/15 bg-white">
             <table className="w-full text-sm">
               <tbody>
-                <tr className="border-b border-amber-500/15">
-                  <td className="px-4 py-3 text-stone-400">Agent Talk Time</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-amber-100">
+                <tr className="border-b border-brand/10">
+                  <td className="px-4 py-3 text-ink/80">Agent Talk Time</td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-brand">
                     {agentTalkPercent}%
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-4 py-3 text-stone-400">Customer Talk Time</td>
-                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-amber-100">
+                  <td className="px-4 py-3 text-ink/80">Customer Talk Time</td>
+                  <td className="px-4 py-3 text-right font-semibold tabular-nums text-brand">
                     {customerTalkPercent}%
                   </td>
                 </tr>
@@ -42,30 +42,30 @@ export function MetricsCard({
             </table>
           </div>
         ) : (
-          <p className="mt-4 text-sm leading-relaxed text-stone-500">
+          <p className="mt-4 text-sm leading-relaxed text-ink/65">
             Run{" "}
-            <span className="font-medium text-amber-200/90">Analyze insights</span>{" "}
-            on the Transcribe tab to estimate talk-time split from this
+            <span className="font-medium text-brand">Analyze insights</span>{" "}
+            on this page to estimate talk-time split from this
             transcript.
           </p>
         )}
       </section>
 
-      <section className="mt-8 border-t border-amber-500/15 pt-8">
-        <h3 className="text-lg font-semibold text-amber-100/95">Overall Call Score</h3>
-        <p className="mt-1 text-sm leading-relaxed text-stone-500">
+      <section className="mt-8 border-t border-brand/15 pt-8">
+        <h3 className="text-lg font-semibold text-ink">Overall Call Score</h3>
+        <p className="mt-1 text-sm leading-relaxed text-ink/65">
           Numeric score from 1–{scoreMax} based on flow, structure, and
           professional communication quality in the transcript.
         </p>
         {overallScore != null ? (
-          <p className="mt-4 text-4xl font-bold tabular-nums tracking-tight text-amber-100">
+          <p className="mt-4 text-4xl font-bold tabular-nums tracking-tight text-brand">
             {overallScore}
-            <span className="text-lg font-medium text-stone-500"> / {scoreMax}</span>
+            <span className="text-lg font-medium text-ink/55"> / {scoreMax}</span>
           </p>
         ) : (
-          <p className="mt-4 text-sm leading-relaxed text-stone-500">
-            No score yet — open this clip in Transcribe and run{" "}
-            <span className="font-medium text-amber-200/90">Analyze insights</span>.
+          <p className="mt-4 text-sm leading-relaxed text-ink/65">
+            No score yet — run{" "}
+            <span className="font-medium text-brand">Analyze insights</span> above.
           </p>
         )}
       </section>

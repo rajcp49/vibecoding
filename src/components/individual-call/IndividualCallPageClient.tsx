@@ -48,14 +48,14 @@ export function IndividualCallPageClient({ id }: { id: string }) {
   if (error) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-        <p className="text-rose-400">{error}</p>
+        <p className="text-brand">{error}</p>
       </div>
     );
   }
 
   if (!model) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16 text-center text-sm text-stone-500">
+      <div className="mx-auto max-w-6xl px-4 py-16 text-center text-sm text-ink/50">
         Loading…
       </div>
     );
