@@ -1,4 +1,4 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a [Next.js](https://nextjs.org) project with **TypeScript**, **Tailwind CSS**, a **sidebar** (`AppSidebar.tsx`) for **Dashboard** and **Transcribe**, plus **global Record / Upload**. New audio **auto-saves** to IndexedDB (`AudioCaptureProvider` + `recordings-db`). The **Dashboard** pulls **live aggregates** from IndexedDB: only calls that have completed **Analyze insights** feed totals, sentiment, quality, duration, keywords, and action-item counts. **Open** on a saved clip jumps to Transcribe with that recording loaded (`?recordingId=`).
 
 ## Getting Started
 
@@ -15,6 +15,11 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Transcription (Step 1)
+
+1. Copy `.env.example` to `.env.local` and set `OPENAI_API_KEY` (never commit `.env.local`).
+2. Open [http://localhost:3000](http://localhost:3000). Use the sidebar **Record** or **Upload file** (works from any tab). Clips save to your library automatically; **Transcribe** then **Analyze insights** for quality, agent scores, sentiment, and action items (via `POST /api/analyze-call`). Transcripts update the same saved row. Deep links: `/?tab=dashboard`, `/?tab=transcribe`.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
