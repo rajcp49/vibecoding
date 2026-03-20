@@ -19,7 +19,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ### Transcription (Step 1)
 
 1. Copy `.env.example` to `.env.local` and set `OPENAI_API_KEY` (never commit `.env.local`).
-2. Open [http://localhost:3000](http://localhost:3000). Use the sidebar **Record** or **Upload file** (works from any tab). Clips save to your library automatically; **Transcribe** then **Analyze insights** for quality, agent scores, sentiment, and action items (via `POST /api/analyze-call`). Transcripts update the same saved row. Deep links: `/?tab=dashboard`, `/?tab=transcribe`.
+2. Open [http://localhost:3000](http://localhost:3000). Use the sidebar **Record** or **Upload file** (works from any tab). Clips save to your library automatically; **Transcribe** then **Analyze insights** for quality, agent scores, sentiment, and action items (via `POST /api/analyze-call`). Transcripts update the same saved row. Deep links: `/?tab=dashboard`, `/?tab=transcribe`, `/?tab=recordings` (Recorded audio).
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
